@@ -50,6 +50,10 @@ Rectangle {
                 Layout.preferredHeight: 50*app.scaleFactor
                 btnText: app.todayDate + " - " + app.tomorrowDate
                 btnIcon: "../assets/images/calendar_fill.png"
+                onClicked: {
+                    dialogInfo.labelText = "This will open a drawer that will allow the user to select dates for events. Event data is not currently available in the app."
+                    dialogInfo.open()
+                }
             }
 
             Item {
@@ -99,7 +103,7 @@ Rectangle {
 
             Label {
                 Layout.alignment: Qt.AlignVCenter
-                text: listModelPlacesSorted.count === 1 ? listModelPlacesSorted.count + " result" : listModelPlacesSorted.count + " sorted by "
+                text: listModelPlacesSorted.count === 1 ? listModelPlacesSorted.count + " result" : listModelPlacesSorted.count + " results sorted by "
                 font {
                     family: app.fontSourceRobotoBold.name
                     pixelSize: 14*app.scaleFactor
@@ -179,6 +183,7 @@ Rectangle {
             Label {
                 width: parent.width - (40*app.scaleFactor)
                 text: "What a bummer! There were no activities found based on your selection criteria. Try changing your criteria to see results."
+                horizontalAlignment: Text.AlignJustify
                 font {
                     family: app.fontSourceRobotoBold.name
                     pixelSize: 16*app.scaleFactor
@@ -331,6 +336,7 @@ Rectangle {
                         _satOpen = satOpen
                         _satClose = satClose
                         _arrHours = []
+                        _favorite = favorite
 
                         getPlaceDetails()
                     }
@@ -348,7 +354,7 @@ Rectangle {
 
                     Image {
                         anchors.fill: parent
-                        source: "assets/images/favorite.png"
+                        source: !favorite ? "assets/images/favorite.png" : "assets/images/favorite_fill.png"
                         mipmap: true
                     }
 
@@ -356,7 +362,13 @@ Rectangle {
                         anchors.fill: parent
 
                         onClicked: {
-                            console.log("liked")
+                            if (favorite) {
+                                unlikePlace(placeId)
+                                favorite = false
+                            }else {
+                                likePlace(placeId)
+                                favorite = true
+                            }
                         }
                     }
                 }
@@ -373,6 +385,10 @@ Rectangle {
     DialogInfo {
         id: dialogSortInfo
         labelText: app.sortDescObj[app.sortBy]
+    }
+
+    DialogInfo {
+        id: dialogInfo
     }
 
     Drawer {
@@ -489,7 +505,7 @@ Rectangle {
 
                 onCheckedChanged: {
                     if (checked) {
-                        sortByLocal = "best nearby"
+                        sortByLocal = "bestNearby"
                     }
                 }
             }
@@ -760,13 +776,15 @@ Rectangle {
             if (app.sortBy !== sortByLocal) {
                 app.sortBy = sortByLocal
 
-                if (app.sortBy === "best nearby") {
+                if (app.sortBy === "bestNearby") {
                     sortModel(arrBestNearby, listModelPlaces, listModelPlacesSorted, "placeId", "bestNearby", true)
                 }else if (app.sortBy === "distance") {
                     sortModel(arrDistance, listModelPlaces, listModelPlacesSorted, "placeId", "distance", false)
                 }else if (app.sortBy === "rating") {
                     sortModel(arrRating, listModelPlaces, listModelPlacesSorted, "placeId", "rating", true)
                 }
+
+                listView.contentY = 0
 
             }
 

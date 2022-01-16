@@ -51,6 +51,13 @@ Page {
     property string _desc: ""
     property string _address: ""
     property var _geomJson
+    property bool _favorite
+
+    // Map list model
+    property alias listModelPlacesMap: listModelPlacesMap
+    ListModel {
+        id: listModelPlacesMap
+    }
 
     // Results list model
     property alias listModelPlaces: listModelPlaces
@@ -133,16 +140,15 @@ Page {
                         featureLayerPlaces.definitionExpression = "1=1"
                     }
 
-                    // If coming from map page, re-open details page
+                    // If coming from map page, clear map list model and re-open details page
                     if (app.mapFromPlaceDetails) {
+                        listModelPlacesMap.clear()
                         app.mapFromPlaceDetails = false
                         app.stackView.push(placeDetailsPage)
                     }
 
                     // Go back
                     swipeView.currentIndex -= 1
-
-
                 }
             }
 
@@ -189,6 +195,7 @@ Page {
 
             ListPage {
                 onMapButtonClicked: {
+                    listModelPlacesMap.clear()
                     swipeView.currentIndex += 1
                     mapPage.zoomToResults()
                 }
@@ -291,7 +298,7 @@ Page {
                     var address = attributes.attributeValue(app.fldAddress) ? attributes.attributeValue(app.fldAddress) : ""
                     var phone = attributes.attributeValue(app.fldPhone) ? attributes.attributeValue(app.fldPhone) : ""
                     var website = attributes.attributeValue(app.fldWebsite) ? attributes.attributeValue(app.fldWebsite) : ""
-                    var rating = attributes.attributeValue(app.fldRating)
+                    var rating = attributes.attributeValue(app.fldRating) !== "None" ? attributes.attributeValue(app.fldRating) : "0"
                     var totalRatings = attributes.attributeValue(app.fldTotalRatings) !== "None" ? attributes.attributeValue(app.fldTotalRatings) : "0"
                     var alwaysOpen = attributes.attributeValue(app.fldAlwaysOpen) === 1 ? true : false
                     var sunOpen = attributes.attributeValue(app.fldSunOpen) ? attributes.attributeValue(app.fldSunOpen) : ""
@@ -308,6 +315,8 @@ Page {
                     var friClose = attributes.attributeValue(app.fldFriClose) ? attributes.attributeValue(app.fldFriClose) : ""
                     var satOpen = attributes.attributeValue(app.fldSatOpen) ? attributes.attributeValue(app.fldSatOpen) : ""
                     var satClose = attributes.attributeValue(app.fldSatClose) ? attributes.attributeValue(app.fldSatClose) : ""
+
+                    var favorite = app.arrFavorites.indexOf(placeId) > -1
 
                     var distance = GeometryEngine.distance(userLocationMeters, geometry)
                     var distanceMiles = (distance * app.metersToMiles).toFixed(1)
@@ -358,10 +367,20 @@ Page {
                                                "tuesClose": tuesClose, "wedOpen": wedOpen, "wedClose": wedClose,
                                                "thursOpen": thursOpen, "thursClose": thursClose, "friOpen": friOpen,
                                                "friClose": friClose, "satOpen": satOpen, "satClose": satClose,
-                                               "distance": distanceMiles, "bestNearby": bestNearby, "geomJson": geometry.json})
+                                               "distance": distanceMiles, "bestNearby": bestNearby, "geomJson": geometry.json,
+                                               "favorite": favorite})
                 }
 
-                sortModel(arrBestNearby, listModelPlaces, listModelPlacesSorted, "placeId", "bestNearby", true)
+                var arrSort = []
+                if (app.sortBy === "bestNearby") {
+                    arrSort = arrBestNearby
+                }else if (app.sortBy === "distance") {
+                    arrSort = arrDistance
+                }else {
+                    arrSort = arrRating
+                }
+
+                sortModel(arrSort, listModelPlaces, listModelPlacesSorted, "placeId", app.sortBy, app.sortReverseObj[app.sortBy])
             }
         }
     }
@@ -393,6 +412,16 @@ Page {
                 sortReviewTimes(arrReviewTimes, listModelReviews, listModelReviewsSorted, "reviewTimeUnix")
             }
         }
+    }
+
+    function unlikePlace(id) {
+        app.dbFunctions.deleteFavorite(id)
+        app.arrFavorites = app.dbFunctions.getFavorites()
+    }
+
+    function likePlace(id) {
+        app.dbFunctions.saveFavorite(id)
+        app.arrFavorites = app.dbFunctions.getFavorites()
     }
 
     function sortReviewTimes(sortArr, listModel, listModelSorted, id) {
@@ -443,13 +472,12 @@ Page {
     function queryPlaces() {
         listModelPlaces.clear()
         listModelPlacesSorted.clear()
-        featureLayerPlaces.definitionExpression = "1=1"
         queryParamsPlaces.whereClause = app.filterMaster
+        console.log(app.filterMaster)
         featureTablePlaces.queryFeaturesWithFieldOptions(queryParamsPlaces, Enums.QueryFeatureFieldsLoadAll)
     }
 
     function getResults() {
-        console.log(app.filterMaster)
         mapPage.featureLayerPlaces.definitionExpression = app.filterMaster
         queryPlaces()
         swipeView.currentIndex += 1

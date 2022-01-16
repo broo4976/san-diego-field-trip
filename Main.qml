@@ -128,6 +128,9 @@ AppLayout {
         property string todayDate: ""
         property string tomorrowDate: ""
 
+        // Favorites
+        property var arrFavorites: []
+
         // Selections
         property string who: ""
         property string active: ""
@@ -140,67 +143,17 @@ AppLayout {
         property string filterActive: ""
         property string filterVenue: ""
 
-        // Sort (best nearby, distance, rating)
-        property string sortBy: "best nearby"
-        property var sortDescObj: ({"best nearby": "Results are sorted by rank, calculated using an algorithm based on distance, rating, and total number of ratings.",
+        // Sort (bestNearby, distance, rating)
+        property string sortBy: "bestNearby"
+        property var sortDescObj: ({"bestNearby": "Results are sorted by rank, calculated using an algorithm based on distance, rating, and total number of ratings.",
                                    "distance": "Results are sorted by distance, from closest to furthest away.",
                                    "rating": "Results are sorted by user rating, from highest to lowest."})
+        property var sortReverseObj: ({"bestNearby": true,
+                                          "distance": false,
+                                          "rating": true})
         // Address searched for by user
         property string searchedAddress: "Address"
         property var searchedAddressPoint: null
-
-        // Who's done it pics
-        property var friendsPicsObj: ({"Leslie DeLeon": "assets/images/profile1.jpg",
-                                      "Tamara Malais": "assets/images/profile2.jpg",
-                                      "Anthony Germaine": "assets/images/profile3.jpg",
-                                      "Liz Nelson": "assets/images/profile4.jpg",
-                                      "Matt Bottenberg": "assets/images/profile5.jpg",
-                                      "Sarah Carleton": "assets/images/profile6.jpg",
-                                      "Rob Matarazzo": "assets/images/profile7.jpg",
-                                      "Camille Reams": "assets/images/profile8.jpg"})
-        property alias listModelFriendsPics: listModelFriendsPics
-        ListModel {
-            id: listModelFriendsPics
-            ListElement {
-                name: "Leslie DeLeon"
-                pic: "assets/images/profile1.jpg"
-            }
-
-            ListElement {
-                name: "Tamara Malais"
-                pic: "assets/images/profile2.jpg"
-            }
-
-            ListElement {
-                name: "Anthony Germain"
-                pic: "assets/images/profile3.jpg"
-            }
-
-            ListElement {
-                name: "Liz Nelson"
-                pic: "assets/images/profile4.jpg"
-            }
-
-            ListElement {
-                name: "Matt Bottenberg"
-                pic: "assets/images/profile5.jpg"
-            }
-
-            ListElement {
-                name: "Sarah Carleton"
-                pic: "assets/images/profile6.jpg"
-            }
-
-            ListElement {
-                name: "G.C.Rice"
-                pic: "assets/images/profile7.jpg"
-            }
-
-            ListElement {
-                name: "Camille Reams"
-                pic: "assets/images/profile8.jpg"
-            }
-        }
 
         // Flag to check if user has clicked on map in place details
         property bool mapFromPlaceDetails: false
@@ -241,6 +194,10 @@ AppLayout {
             var tomorrow = new Date(today)
             tomorrow.setDate(tomorrow.getDate() + 1)
             tomorrowDate = new Date(tomorrow).getDate()
+
+            // Get favorites
+            app.arrFavorites = dbFunctions.getFavorites()
+            console.log(arrFavorites)
         }
 
 
@@ -248,7 +205,7 @@ AppLayout {
         StackView {
             id: stackView
             anchors.fill: parent
-            initialItem: containerPage
+            initialItem: loginPage
         }
 
         Component {
@@ -260,6 +217,11 @@ AppLayout {
         Component {
             id: containerPage
             ContainerPage{}
+        }
+
+        property alias dbFunctions: dbFunctions
+        DatabaseFunctions {
+            id: dbFunctions
         }
     }
 }

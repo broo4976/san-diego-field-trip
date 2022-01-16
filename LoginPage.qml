@@ -230,7 +230,7 @@ Rectangle {
                     anchors.fill: parent
 
                     onClicked: {
-                        console.log("sign up")
+                        app.stackView.push(containerPage)
                     }
                 }
             }
@@ -262,7 +262,7 @@ Rectangle {
 
                 Label {
                     id: lblEnterAsGuest
-                    text: "Enger as guest"
+                    text: "Enter as guest"
                     font {
                         family: app.fontSourceRobotoBold.name
                         pixelSize: 16*app.scaleFactor
@@ -276,7 +276,7 @@ Rectangle {
                     anchors.fill: parent
 
                     onClicked: {
-                        console.log("enter as guest")
+                        app.stackView.push(containerPage)
                     }
                 }
             }

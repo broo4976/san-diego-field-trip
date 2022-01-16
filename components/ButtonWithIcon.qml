@@ -32,6 +32,41 @@ RoundButton {
             color: app.colorSecondary1
         }
     }
+
+//    indicator: RowLayout {
+//        id: row
+//        spacing: 0
+
+//        Item {
+//            Layout.preferredWidth: 4*app.scaleFactor
+//        }
+
+//        Image {
+//            Layout.preferredWidth: 25*app.scaleFactor
+//            Layout.preferredHeight: 25*app.scaleFactor
+//            mipmap: true
+//            source: btnIcon
+//        }
+
+//        Item {
+//            Layout.preferredWidth: 4*app.scaleFactor
+//        }
+
+//        Label {
+//            text: btnText
+//            font {
+//                family: app.fontSourceRobotoBold.name
+//                pixelSize: 16*app.scaleFactor
+//                weight: Font.Bold
+//                capitalization: Font.MixedCase
+//            }
+//            color: app.colorSecondary1
+//        }
+
+//        Item {
+//            Layout.preferredWidth: 4*app.scaleFactor
+//        }
+//    }
     
     font {
         family: app.fontSourceRobotoBold.name

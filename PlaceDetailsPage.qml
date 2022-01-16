@@ -16,8 +16,8 @@ Page {
 
     Component.onCompleted: {
         mapView.map.operationalLayers.clear()
-        homePage.featureLayerPlaces.definitionExpression = app.fldPlaceId + " = '" + _placeId + "'"
-        mapView.map.operationalLayers.append(homePage.featureTablePlaces.featureLayer)
+        featureLayerPlaces.definitionExpression = app.fldPlaceId + " = '" + _placeId + "'"
+        mapView.map.operationalLayers.append(featureTablePlaces.featureLayer)
         var placePoint = ArcGISRuntimeEnvironment.createObject("Point", {json: _geomJson})
         mapView.setViewpointCenterAndScale(placePoint, 80000)
     }
@@ -38,7 +38,6 @@ Page {
 
         ToolButton {
             id: btnBack
-            visible: swipeView.currentIndex > 0
             anchors {
                 left: parent.left
                 top: parent.top
@@ -53,6 +52,7 @@ Page {
             }
 
             onClicked: {
+                listModelPlacesMap.clear()
                 app.stackView.pop()
             }
         }
@@ -89,14 +89,28 @@ Page {
 
             indicator: Image {
                 anchors.centerIn: parent
-                source: "assets/images/favorite.png"
+                source: !_favorite ? "assets/images/favorite.png" : "assets/images/favorite_fill.png"
                 width: 25*app.scaleFactor
                 height: 25*app.scaleFactor
                 smooth: true
             }
 
             onClicked: {
+                if (_favorite) {
+                    unlikePlace(_placeId)
+                    _favorite = false
+                }else {
+                    likePlace(_placeId)
+                    _favorite = true
+                }
 
+                // Update in list view model
+                for (var i = 0; i < listModelPlacesSorted.count; i++) {
+                    if (listModelPlacesSorted.get(i).placeId === _placeId) {
+                        listModelPlacesSorted.get(i).favorite = _favorite
+                        break
+                    }
+                }
             }
         }
 
@@ -595,7 +609,9 @@ Page {
 
                     onClicked: {
                         // Show map page
-                        swipeView.currentIndex += 1
+                        if (swipeView.currentIndex !== swipeView.count-1) {
+                            swipeView.currentIndex += 1
+                        }
 
                         // Select/zoom to point on map
                         mapPage.selectAndZoomToFeatureFromPlaceDetails(_placeId, _geomJson)
@@ -647,7 +663,8 @@ Page {
                         anchors.fill: parent
 
                         onClicked: {
-                            dialogTipsInfo.open()
+                            dialogInfo.labelText = "Tips are things you should know before you go (bring a chair, cash only, etc)."
+                            dialogInfo.open()
                         }
                     }
                 }
@@ -693,6 +710,11 @@ Page {
                 Layout.preferredWidth: 240*app.scaleFactor
                 Layout.preferredHeight: 50*app.scaleFactor
                 btnText: "Suggest a tip for this listing"
+
+                onClicked: {
+                    dialogInfo.labelText = "Under development - this feature will open a form for the user to enter/submit a tip."
+                    dialogInfo.open()
+                }
             }
 
             Item {
@@ -924,6 +946,11 @@ Page {
                 Layout.preferredWidth: 240*app.scaleFactor
                 Layout.preferredHeight: 50*app.scaleFactor
                 btnText: "Improve this listing"
+
+                onClicked: {
+                    dialogInfo.labelText = "Under development - this feature will open a form for the user to enter/submit corrections to the listing."
+                    dialogInfo.open()
+                }
             }
 
             Item {
@@ -933,8 +960,7 @@ Page {
     }
 
     DialogInfo {
-        id: dialogTipsInfo
-        labelText: "Tips are things you should know before you go (bring a chair, cash only, etc)."
+        id: dialogInfo
     }
 
     Drawer {

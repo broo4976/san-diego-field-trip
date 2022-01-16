@@ -13,16 +13,9 @@ Page {
 
     Material.background: app.colorPrimary2
 
-    property ListModel listModelPlacesMap: listModelPlacesMap
-    ListModel {
-        id: listModelPlacesMap
-    }
-
     // Map properties
     property FeatureLayer featureLayerPlaces: null
     property ServiceFeatureTable featureTablePlaces: null
-
-    // Aliases
 
     Component.onCompleted: {
         mapView.locationDisplay.start()
@@ -107,13 +100,13 @@ Page {
                     var satOpen = attributes.attributeValue(app.fldSatOpen) ? attributes.attributeValue(app.fldSatOpen) : ""
                     var satClose = attributes.attributeValue(app.fldSatClose) ? attributes.attributeValue(app.fldSatClose) : ""
 
+                    var favorite = app.arrFavorites.indexOf(placeId) > -1
+
                     var distance = GeometryEngine.distance(userLocationMeters, geometry)
                     var distanceMiles = (distance * app.metersToMiles).toFixed(1)
 
                     // Rank "best nearby" based on formula:
                     var bestNearby = ((rating*1) + (totalRatings*0.008) + (distanceMiles*-1)) * -1
-
-                    //arrRanking.push(bestNearby)
 
 
                     listModelPlacesMap.append({"name": name, "placeId": placeId, "desc": desc, "photoUrl": photoUrl,
@@ -123,7 +116,8 @@ Page {
                                                "tuesClose": tuesClose, "wedOpen": wedOpen, "wedClose": wedClose,
                                                "thursOpen": thursOpen, "thursClose": thursClose, "friOpen": friOpen,
                                                "friClose": friClose, "satOpen": satOpen, "satClose": satClose,
-                                               "distance": distanceMiles, "bestNearby": bestNearby, "geomJson": geometry.json})
+                                               "distance": distanceMiles, "bestNearby": bestNearby, "geomJson": geometry.json,
+                                               "favorite": favorite})
                 }
 
 
@@ -221,6 +215,7 @@ Page {
                         _satOpen = satOpen
                         _satClose = satClose
                         _arrHours = []
+                        _favorite = favorite
 
                         getPlaceDetails()
                     }
@@ -373,7 +368,7 @@ Page {
 
                                 Image {
                                     anchors.fill: parent
-                                    source: "assets/images/favorite.png"
+                                    source: !favorite ? "assets/images/favorite.png" : "assets/images/favorite_fill.png"
                                     mipmap: true
                                 }
 
@@ -381,7 +376,21 @@ Page {
                                     anchors.fill: parent
 
                                     onClicked: {
-                                        console.log("liked")
+                                        if (favorite) {
+                                            unlikePlace(placeId)
+                                            favorite = false
+                                        }else {
+                                            likePlace(placeId)
+                                            favorite = true
+                                        }
+
+                                        // Update in list view model
+                                        for (var i = 0; i < listModelPlacesSorted.count; i++) {
+                                            if (listModelPlacesSorted.get(i).placeId === placeId) {
+                                                listModelPlacesSorted.get(i).favorite = favorite
+                                                break
+                                            }
+                                        }
                                     }
                                 }
                             }
