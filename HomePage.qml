@@ -136,9 +136,9 @@ Page {
                 }
 
                 onClicked: {
-//                    if (swipeView.currentIndex === 3) {
-//                        featureLayerPlaces.definitionExpression = app.filterMaster
-//                    }
+                    if (swipeView.currentIndex === 3) {
+                        featureLayerPlaces.definitionExpression = app.filterMaster
+                    }
 
                     // If coming from map page, clear map list model and re-open details page
                     if (app.mapFromPlaceDetails) {

@@ -113,7 +113,7 @@ Rectangle {
             }
 
             Rectangle {
-                visible: listModelPlacesSorted.count > 0
+                visible: listModelPlacesSorted.count > 1
                 Layout.preferredWidth: lblSortType.contentWidth
                 Layout.preferredHeight: lblSortType.contentHeight
                 color: "transparent"
@@ -145,6 +145,7 @@ Rectangle {
             }
 
             Rectangle {
+                visible: listModelPlacesSorted.count > 1
                 Layout.preferredWidth: 20*app.scaleFactor
                 Layout.preferredHeight: 20*app.scaleFactor
                 color: "transparent"
