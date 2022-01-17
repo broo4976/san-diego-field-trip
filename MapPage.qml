@@ -50,8 +50,10 @@ Page {
         }
 
         onMouseClicked: {
-            listModelPlacesMap.clear()
-            identifyLayerWithMaxResults(featureLayerPlaces, mouse.x, mouse.y, 15*app.scaleFactor, false, 20)
+            if (!app.mapFromPlaceDetails) {
+                listModelPlacesMap.clear()
+                identifyLayerWithMaxResults(featureLayerPlaces, mouse.x, mouse.y, 15*app.scaleFactor, false, 20)
+            }
         }
 
         onIdentifyLayerStatusChanged: {

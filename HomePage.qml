@@ -136,9 +136,9 @@ Page {
                 }
 
                 onClicked: {
-                    if (swipeView.currentIndex === 3) {
-                        featureLayerPlaces.definitionExpression = "1=1"
-                    }
+//                    if (swipeView.currentIndex === 3) {
+//                        featureLayerPlaces.definitionExpression = app.filterMaster
+//                    }
 
                     // If coming from map page, clear map list model and re-open details page
                     if (app.mapFromPlaceDetails) {
@@ -167,7 +167,7 @@ Page {
                     anchors.fill: parent
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    text: app.who + " - " + app.active + " - " + app.where
+                    text: (swipeView.currentIndex === swipeView.count-1 && app.mapFromPlaceDetails) ? _placeName : app.who + " - " + app.active + " - " + app.where
                     wrapMode: Text.WordWrap
                     font {
                         family: app.fontSourceRobotoBold.name

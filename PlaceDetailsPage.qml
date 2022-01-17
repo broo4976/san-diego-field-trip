@@ -17,6 +17,7 @@ Page {
     Component.onCompleted: {
         mapView.map.operationalLayers.clear()
         featureLayerPlaces.definitionExpression = app.fldPlaceId + " = '" + _placeId + "'"
+        mapPage.featureLayerPlaces.definitionExpression = app.fldPlaceId + " = '" + _placeId + "'"
         mapView.map.operationalLayers.append(featureTablePlaces.featureLayer)
         var placePoint = ArcGISRuntimeEnvironment.createObject("Point", {json: _geomJson})
         mapView.setViewpointCenterAndScale(placePoint, 80000)
