@@ -195,6 +195,7 @@ Page {
 
             ListPage {
                 onMapButtonClicked: {
+                    mapPage.featureLayerPlaces.definitionExpression = app.filterMaster
                     listModelPlacesMap.clear()
                     swipeView.currentIndex += 1
                     mapPage.zoomToResults()
