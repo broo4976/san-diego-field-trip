@@ -151,6 +151,7 @@ AppLayout {
         property var sortReverseObj: ({"bestNearby": true,
                                           "distance": false,
                                           "rating": true})
+        property var sortNamesObj: ({"bestNearby": "best nearby", "distance": "distance", "rating": "rating"})
         // Address searched for by user
         property string searchedAddress: "Address"
         property var searchedAddressPoint: null

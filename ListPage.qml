@@ -121,7 +121,7 @@ Rectangle {
                 Label {
                     id: lblSortType
                     Layout.alignment: Qt.AlignVCenter
-                    text: app.sortBy
+                    text: app.sortNamesObj[app.sortBy]
                     font {
                         family: app.fontSourceRobotoBold.name
                         pixelSize: 14*app.scaleFactor

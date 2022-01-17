@@ -136,10 +136,6 @@ Page {
                 }
 
                 onClicked: {
-                    if (swipeView.currentIndex === 3) {
-                        featureLayerPlaces.definitionExpression = app.filterMaster
-                    }
-
                     // If coming from map page, clear map list model and re-open details page
                     if (app.mapFromPlaceDetails) {
                         listModelPlacesMap.clear()
@@ -479,6 +475,7 @@ Page {
     }
 
     function getResults() {
+        mapPage.featureLayerPlaces.definitionExpression = "1=1"
         mapPage.featureLayerPlaces.definitionExpression = app.filterMaster
         queryPlaces()
         swipeView.currentIndex += 1
