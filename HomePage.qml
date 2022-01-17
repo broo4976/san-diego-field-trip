@@ -603,8 +603,9 @@ Page {
             }
         }else {
             ampm = "AM"
-            if (hoursInt === 0) {
+            if (parseInt(time) === 0) {
                 hours = "12"
+                minutes = "00"
             }
         }
         newTime = hours + ":" + minutes + " " + ampm
